@@ -19,8 +19,12 @@ const int redOutPin = 10;
 
 int probesValue = 0;
 int lightValue = 0;
+int timeCounter = 0;
 
 const int debug = 1;
+const int cyclesBetweenLoops = 30;
+const int cycleMilliSecondSize = 60000;
+
 
 /****************
 *** FUNCTIONS ***
@@ -109,11 +113,15 @@ void setup()
   }
   
   launchWarning();
+  timeCounter = cyclesBetweenLoops;
+  checkAndWater();
 }
 
-/*Main program : wait and check the plant every X minutes*/
-void loop () 
+void checkAndWater()
 {
+  if(debug == 1){
+    Serial.println("Check sensors...");
+  }
   readLightValue();
   readProbesValue();
   if(probesValue < 300)
@@ -129,4 +137,22 @@ void loop ()
   } else {
     blinkGreen();
   }
+}
+
+/*Main program : wait and check the plant every X minutes*/
+void loop () 
+{
+  if(timeCounter < 1)
+  {
+    timeCounter = cyclesBetweenLoops;
+    checkAndWater();
+  }
+  
+  if(debug == 1){
+    Serial.println("Wait a cycle more...");
+    Serial.println(timeCounter); 
+  }
+  delay(cycleMilliSecondSize);
+  --timeCounter;
+  
 } // end of loop
